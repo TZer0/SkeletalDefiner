@@ -13,8 +13,8 @@ void Render::initializeGL() {
 	glClearColor( 0.1, 0.1, 0.1, 0.0 );
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DOUBLE);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT );
 	Rot = QQuaternion::fromAxisAndAngle(0,0,0,90);
 	Rotating = true;
@@ -80,7 +80,7 @@ void Render::paintGL() {
 	double xf = 3;
 	double yf = -3;
 	double yt = 3;
-	double z = 1;
+	double z = 0;
 	glColor4f(1,1,1,1);
 	glBegin(GL_QUADS);
 	glVertex3f(xf,yt,z);

@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include <QGLWidget>
+#include <assimp/assimp.hpp>
 
 class Render : public QGLWidget
 {
@@ -14,10 +15,10 @@ public:
 	void mousePressEvent(QMouseEvent *);
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseRelaseEvent(QMouseEvent *);
+	QVector3D getVector(int x, int y);
 	bool Rotating;
 	QVector3D StartPoint;
 	QQuaternion Rot, Old;
-	QVector3D getVector(int x, int y);
 
 signals:
 	
