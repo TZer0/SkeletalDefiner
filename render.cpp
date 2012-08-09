@@ -13,8 +13,8 @@ void Render::initializeGL() {
 	glClearColor( 0.1, 0.1, 0.1, 0.0 );
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DOUBLE);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 	glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT );
 	Rot = QQuaternion::fromAxisAndAngle(0,0,0,90);
 	Rotating = true;
@@ -46,11 +46,16 @@ void Render::mouseMoveEvent(QMouseEvent *event) {
 	if (Rotating) {
 		QVector3D cur = getVector(event->x(), event->y());
 		qreal dot = QVector3D::dotProduct(StartPoint, cur);
-		if (fabs(dot) < 0.000001) {
+		if (fabs(dot) < 0.000001 || acos(dot) > 9000 || acos(dot) < -9000) {
 			return;
 		}
 		QVector3D cross = QVector3D::crossProduct(StartPoint, cur);
+		if (cross.length() < 0.000001) {
+			return;
+		}
 		Rot = (QQuaternion::fromAxisAndAngle(cross, (float)(acos(dot)/3.14 )*180) * Old).normalized();
+		StartPoint = cur;
+		Old = Rot;
 	}
 }
 
@@ -69,8 +74,9 @@ void Render::paintGL() {
 	mat->setToIdentity();
 	mat->rotate(Rot);
 	float conv[16];
+	qreal *from = mat->data();
 	for (int i = 0; i < 16; i++) {
-		conv[i] = mat->data()[i];
+		conv[i] = from[i];
 	}
 	glMultMatrixf(conv);
 	glMatrixMode(GL_MODELVIEW);

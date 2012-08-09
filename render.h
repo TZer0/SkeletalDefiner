@@ -3,7 +3,6 @@
 
 #include <QtGui>
 #include <QGLWidget>
-#include <assimp/assimp.hpp>
 
 class Render : public QGLWidget
 {
