@@ -17,4 +17,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     render.h
 
+LIBS += -lassimp
+
 FORMS    += mainwindow.ui

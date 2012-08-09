@@ -3,6 +3,8 @@
 
 #include <QtGui>
 #include <QGLWidget>
+#include <assimp/assimp.hpp>
+#include <string>
 
 class Render : public QGLWidget
 {
@@ -13,11 +15,21 @@ public:
 	void initializeGL();
 	void mousePressEvent(QMouseEvent *);
 	void mouseMoveEvent(QMouseEvent *);
-	void mouseRelaseEvent(QMouseEvent *);
+	void mouseReleaseEvent(QMouseEvent *);
+	void resizeEvent(QResizeEvent *);
+	void loadMesh(std::string);
+	void calcRatio();
+	float xPixToDouble(int);
+	float yPixToDouble(int);
+	float xToViewX(int, float);
+	float yToViewY(int, float);
 	QVector3D getVector(int x, int y);
+	QMatrix4x4 rotToMatrix();
+	void rotToFloatArray(float conv[16]);
 	bool Rotating;
 	QVector3D StartPoint;
 	QQuaternion Rot, Old;
+	float left, right, top, bottom, near, far, ratio;
 
 signals:
 	
