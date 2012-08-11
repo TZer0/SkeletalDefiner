@@ -27,7 +27,7 @@ public:
 	QMatrix4x4 rotToMatrix();
 	void rotToFloatArray(float conv[16]);
 	bool Rotating;
-	QVector3D StartPoint;
+	QVector3D StartPoint, SelectionDir;
 	QQuaternion Rot, Old;
 	float left, right, top, bottom, near, far, ratio;
 

@@ -9,6 +9,7 @@ Render::Render(QWidget *parent) :
 	right = top = 1;
 	near = 0.3;
 	far = 10.1;
+	SelectionDir = QVector3D(1,1,1);
 	calcRatio();
 }
 
@@ -29,6 +30,7 @@ void Render::initializeGL() {
 	glClearColor( 0.1, 0.1, 0.1, 0.0 );
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DOUBLE);
+	glEnable(GL_BLEND);
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
 	glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT );
@@ -61,12 +63,17 @@ void Render::mousePressEvent(QMouseEvent *event) {
 		Rotating = true;
 		StartPoint = getVector(event->x(), event->y());
 	} else if (event->button() == Qt::LeftButton) {
-		QVector3D nearPoint = QVector3D(xToViewX(event->x(), near), yToViewY(event->y(), near), near);
-		QVector3D farPoint = QVector3D(xToViewX(event->x(), far), yToViewY(event->y(), far), far);
+		QVector3D nearPoint = QVector3D(xToViewX(event->x(), near), yToViewY(event->y(), near), -near);
+		QVector3D farPoint = QVector3D(xToViewX(event->x(), far), yToViewY(event->y(), far), -far);
 		QVector3D direction = (farPoint - nearPoint).normalized();
 		QMatrix4x4 mat = rotToMatrix();
 		qDebug() << mat;
-		qDebug() << mat*direction;
+		qDebug() << direction;
+		SelectionDir = mat * direction;
+		qDebug() << SelectionDir;
+		qDebug() << nearPoint;
+		qDebug() << farPoint;
+		paintGL();
 	}
 }
 
@@ -137,20 +144,35 @@ void Render::paintGL() {
 	rotToFloatArray(conv);
 	glMultMatrixf(conv);
 
+	QMatrix4x4 mat = rotToMatrix();
 	float xt = -3;
 	float xf = 3;
 	float yf = -3;
 	float yt = 3;
 	float z = 0;
-	glColor4f(1,1,1,1);
+
+	glColor4f(1, 1, 1, 1);
+	glLineWidth(10);
+	glBegin(GL_LINES);
+	glVertex3f(0,0,0);
+	glVertex3f(SelectionDir.x()*1, SelectionDir.y()*1, SelectionDir.z()*1);
+	glEnd();
+
+	glColor4f(1, 0, 0, 1);
+	glLineWidth(10);
+	glBegin(GL_LINES);
+	glVertex3f(SelectionDir.x()*1, SelectionDir.y()*1, SelectionDir.z()*1);
+	glVertex3f(SelectionDir.x()*2, SelectionDir.y()*2, SelectionDir.z()*2);
+	glEnd();
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glColor4f(1,1,1,0.1);
 	glBegin(GL_QUADS);
 	glVertex3f(xf,yt,z);
 	glVertex3f(xf,yf,z);
 	glVertex3f(xt,yf,z);
 	glVertex3f(xt,yt,z);
 	glEnd();
-
-
 	glFlush();
 	glFinish();
 	swapBuffers();
