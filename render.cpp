@@ -65,11 +65,11 @@ void Render::mousePressEvent(QMouseEvent *event) {
 	} else if (event->button() == Qt::LeftButton) {
 		QVector3D nearPoint = QVector3D(xToViewX(event->x(), near), yToViewY(event->y(), near), -near);
 		QVector3D farPoint = QVector3D(xToViewX(event->x(), far), yToViewY(event->y(), far), -far);
-		QVector3D direction = (farPoint - nearPoint).normalized();
+		QVector3D direction = (farPoint - nearPoint);
 		QMatrix4x4 mat = rotToMatrix();
 		qDebug() << mat;
 		qDebug() << direction;
-		SelectionDir = mat * direction;
+		SelectionDir = (direction * mat).normalized();
 		qDebug() << SelectionDir;
 		qDebug() << nearPoint;
 		qDebug() << farPoint;
