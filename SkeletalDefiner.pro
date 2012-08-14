@@ -12,10 +12,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    render.cpp
+    render.cpp \
+    pointcloud.cpp
 
 HEADERS  += mainwindow.h \
-    render.h
+    render.h \
+    pointcloud.h
 
 LIBS += -lassimp
 

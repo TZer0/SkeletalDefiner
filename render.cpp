@@ -11,6 +11,7 @@ Render::Render(QWidget *parent) :
 	far = 10.1;
 	SelectionDir = QVector3D(1,1,1);
 	calcRatio();
+	pc.setBound(&far);
 }
 
 void Render::calcRatio() {
@@ -63,16 +64,15 @@ void Render::mousePressEvent(QMouseEvent *event) {
 		Rotating = true;
 		StartPoint = getVector(event->x(), event->y());
 	} else if (event->button() == Qt::LeftButton) {
+		QMatrix4x4 mat = rotToMatrix();
 		QVector3D nearPoint = QVector3D(xToViewX(event->x(), near), yToViewY(event->y(), near), -near);
 		QVector3D farPoint = QVector3D(xToViewX(event->x(), far), yToViewY(event->y(), far), -far);
 		QVector3D direction = (farPoint - nearPoint);
-		QMatrix4x4 mat = rotToMatrix();
-		qDebug() << mat;
-		qDebug() << direction;
+		QVector3D startPoint = QVector3D(0,0,5) * mat;
 		SelectionDir = (direction * mat).normalized();
 		qDebug() << SelectionDir;
-		qDebug() << nearPoint;
-		qDebug() << farPoint;
+		qDebug() << startPoint;
+		pc.selectNearestPoint(SelectionDir, startPoint);
 		paintGL();
 	}
 }
@@ -144,7 +144,6 @@ void Render::paintGL() {
 	rotToFloatArray(conv);
 	glMultMatrixf(conv);
 
-	QMatrix4x4 mat = rotToMatrix();
 	float xt = -3;
 	float xf = 3;
 	float yf = -3;
@@ -155,7 +154,7 @@ void Render::paintGL() {
 	glLineWidth(10);
 	glBegin(GL_LINES);
 	glVertex3f(0,0,0);
-	glVertex3f(SelectionDir.x()*1, SelectionDir.y()*1, SelectionDir.z()*1);
+	glVertex3f(SelectionDir.x(), SelectionDir.y(), SelectionDir.z());
 	glEnd();
 
 	glColor4f(1, 0, 0, 1);

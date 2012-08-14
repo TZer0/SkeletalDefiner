@@ -5,6 +5,7 @@
 #include <QGLWidget>
 #include <assimp/assimp.hpp>
 #include <string>
+#include "pointcloud.h"
 
 class Render : public QGLWidget
 {
@@ -26,6 +27,8 @@ public:
 	QVector3D getVector(int x, int y);
 	QMatrix4x4 rotToMatrix();
 	void rotToFloatArray(float conv[16]);
+
+	PointCloud pc;
 	bool Rotating;
 	QVector3D StartPoint, SelectionDir;
 	QQuaternion Rot, Old;
