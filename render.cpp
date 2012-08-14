@@ -5,17 +5,16 @@ Render::Render(QWidget *parent) :
 {
 	Rot = QQuaternion::fromAxisAndAngle(0,0,0,90);
 	Rotating = true;
-	left = bottom = -1;
-	right = top = 1;
-	near = 0.3;
-	far = 10.1;
+	FrustWidth = FrustHeight = 1;
+	FrustNear = 0.3;
+	FrustFar = 10.1;
 	SelectionDir = QVector3D(1,1,1);
 	calcRatio();
-	pc.setBound(&far);
+	updatePointCloudDist();
 }
 
 void Render::calcRatio() {
-	ratio = height()/((float)width());
+	FrustRatio = height()/((float)width());
 }
 
 void Render::redraw() {
@@ -53,6 +52,11 @@ QVector3D Render::getVector(int x, int y) {
 	return QVector3D(xm, ym, lComp).normalized();
 }
 
+void Render::updatePointCloudDist() {
+	qDebug() << sqrt(pow(FrustFar, 2) + pow(FrustWidth, 2) + pow(FrustHeight, 2));
+	PC.setMaxdist(sqrt(pow(FrustFar, 2) + pow(FrustWidth, 2) + pow(FrustHeight, 2)));
+}
+
 void Render::resizeEvent(QResizeEvent *event) {
 	glViewport( 0, 0, (GLint)event->size().width(), (GLint)event->size().height());
 	calcRatio();
@@ -65,14 +69,14 @@ void Render::mousePressEvent(QMouseEvent *event) {
 		StartPoint = getVector(event->x(), event->y());
 	} else if (event->button() == Qt::LeftButton) {
 		QMatrix4x4 mat = rotToMatrix();
-		QVector3D nearPoint = QVector3D(xToViewX(event->x(), near), yToViewY(event->y(), near), -near);
-		QVector3D farPoint = QVector3D(xToViewX(event->x(), far), yToViewY(event->y(), far), -far);
-		QVector3D direction = (farPoint - nearPoint);
+		QVector3D FrustNearPoint = QVector3D(xToViewX(event->x(), FrustNear), yToViewY(event->y(), FrustNear), -FrustNear);
+		QVector3D FrustFarPoint = QVector3D(xToViewX(event->x(), FrustFar), yToViewY(event->y(), FrustFar), -FrustFar);
+		QVector3D direction = (FrustFarPoint - FrustNearPoint);
 		QVector3D startPoint = QVector3D(0,0,5) * mat;
 		SelectionDir = (direction * mat).normalized();
 		qDebug() << SelectionDir;
 		qDebug() << startPoint;
-		pc.selectNearestPoint(SelectionDir, startPoint);
+		PC.selectNearestPoint(SelectionDir, startPoint);
 		paintGL();
 	}
 }
@@ -112,7 +116,7 @@ float Render::xToViewX(int x, float z) {
 }
 
 float Render::yToViewY(int y, float z) {
-	return ((yPixToDouble(y)) * z * ratio);
+	return ((yPixToDouble(y)) * z * FrustRatio);
 }
 
 QMatrix4x4 Render::rotToMatrix(){
@@ -136,7 +140,7 @@ void Render::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glFrustum(left, right, bottom*ratio, top*ratio, near, far);
+	glFrustum(-FrustWidth, FrustWidth, -FrustHeight*FrustRatio, FrustHeight*FrustRatio, FrustNear, FrustFar);
 	glTranslatef(0,0,-5);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

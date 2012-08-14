@@ -20,6 +20,7 @@ public:
 	void resizeEvent(QResizeEvent *);
 	void loadMesh(std::string);
 	void calcRatio();
+	void updatePointCloudDist();
 	float xPixToDouble(int);
 	float yPixToDouble(int);
 	float xToViewX(int, float);
@@ -28,11 +29,11 @@ public:
 	QMatrix4x4 rotToMatrix();
 	void rotToFloatArray(float conv[16]);
 
-	PointCloud pc;
+	PointCloud PC;
 	bool Rotating;
 	QVector3D StartPoint, SelectionDir;
 	QQuaternion Rot, Old;
-	float left, right, top, bottom, near, far, ratio;
+	float FrustWidth, FrustHeight, FrustNear, FrustFar, FrustRatio;
 
 signals:
 	

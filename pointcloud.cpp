@@ -2,24 +2,29 @@
 
 PointCloud::PointCloud()
 {
-	points.append(new QVector3D(0,0,0));
-	far = NULL;
+	Points.append(new QVector3D(0,0,0));
+	Points.append(new QVector3D(3,3,0));
+	Points.append(new QVector3D(-3,-3,0));
+	Points.append(new QVector3D(-3,3,0));
+	Points.append(new QVector3D(3,-3,0));
 }
 
-void PointCloud::setBound(float *far) {
-	this->far = far;
+void PointCloud::setMaxdist(double Maxdist) {
+	this->Maxdist = Maxdist;
 }
 
 void PointCloud::selectNearestPoint(QVector3D direction, QVector3D start) {
 	QVector3D origStart = start;
 	bool found = false;
-	while ((origStart - start).length() < *far) {
+	qDebug() << Maxdist;
+	while ((origStart - start).length() < Maxdist) {
 		start += direction*0.05;
-		for (int i = 0; i < points.length(); i++) {
-			if ((*points[i]-start).length() < 0.1) {
+		qDebug() << start;
+		for (int i = 0; i < Points.length(); i++) {
+			if ((*Points[i]-start).length() < 0.1) {
 				found = true;
-				if (!selected.contains(points[i])) {
-					selected.append(points[i]);
+				if (!Selected.contains(Points[i])) {
+					Selected.append(Points[i]);
 				}
 				qDebug() << "found.";
 				break;

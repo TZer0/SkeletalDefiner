@@ -9,10 +9,10 @@ class PointCloud
 public:
 	PointCloud();
 	void selectNearestPoint(QVector3D direction, QVector3D start);
-	void setBound(float *);
-	QList<QVector3D*> points;
-	QList<QVector3D*> selected;
-	float *far;
+	void setMaxdist(double);
+	QList<QVector3D*> Points;
+	QList<QVector3D*> Selected;
+	double Maxdist;
 };
 
 #endif // POINTCLOUD_H
