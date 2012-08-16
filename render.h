@@ -17,6 +17,8 @@ public:
 	void mousePressEvent(QMouseEvent *);
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent *);
+	void wheelEvent(QWheelEvent *);
+	void updateCurDrag(QMouseEvent *);
 	void resizeEvent(QResizeEvent *);
 	void loadMesh(std::string);
 	void calcRatio();
@@ -25,15 +27,19 @@ public:
 	float yPixToDouble(int);
 	float xToViewX(int, float);
 	float yToViewY(int, float);
-	QVector3D getVector(int x, int y);
+	QVector3D getVector(int, int);
 	QMatrix4x4 rotToMatrix();
 	void rotToFloatArray(float conv[16]);
+	void setShift(bool);
+	float getFrustHeight();
+	float getFrustWidth();
 
 	PointCloud PC;
-	bool Rotating;
-	QVector3D StartPoint, SelectionDir;
+	bool Rotating, Shift, Dragging;
+	QVector3D StartPoint, SelectionDir, CamOldPoint, CamPoint;
 	QQuaternion Rot, Old;
-	float FrustWidth, FrustHeight, FrustNear, FrustFar, FrustRatio;
+	float FrustWidth, FrustHeight, FrustNear, FrustFar, FrustRatio, FrustZoom;
+	int CurDragX, CurDragY;
 
 signals:
 	

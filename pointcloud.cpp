@@ -19,9 +19,8 @@ void PointCloud::selectNearestPoint(QVector3D direction, QVector3D start) {
 	qDebug() << Maxdist;
 	while ((origStart - start).length() < Maxdist) {
 		start += direction*0.05;
-		qDebug() << start;
 		for (int i = 0; i < Points.length(); i++) {
-			if ((*Points[i]-start).length() < 0.1) {
+			if ((*Points[i]-start).length() < 0.2) {
 				found = true;
 				if (!Selected.contains(Points[i])) {
 					Selected.append(Points[i]);

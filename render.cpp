@@ -4,11 +4,14 @@ Render::Render(QWidget *parent) :
 	QGLWidget(parent)
 {
 	Rot = QQuaternion::fromAxisAndAngle(0,0,0,90);
-	Rotating = true;
+	Dragging = Shift = Rotating = false;
 	FrustWidth = FrustHeight = 1;
+	FrustZoom = 1;
 	FrustNear = 0.3;
 	FrustFar = 10.1;
 	SelectionDir = QVector3D(1,1,1);
+	CamPoint = QVector3D(0,0,5);
+	CurDragX = CurDragY = 0;
 	calcRatio();
 	updatePointCloudDist();
 }
@@ -62,22 +65,34 @@ void Render::resizeEvent(QResizeEvent *event) {
 	calcRatio();
 }
 
+void Render::setShift(bool state) {
+	Shift = state;
+}
+
 void Render::mousePressEvent(QMouseEvent *event) {
-	if (event->button() == Qt::RightButton) {
-		Old = Rot;
-		Rotating = true;
-		StartPoint = getVector(event->x(), event->y());
-	} else if (event->button() == Qt::LeftButton) {
-		QMatrix4x4 mat = rotToMatrix();
-		QVector3D FrustNearPoint = QVector3D(xToViewX(event->x(), FrustNear), yToViewY(event->y(), FrustNear), -FrustNear);
-		QVector3D FrustFarPoint = QVector3D(xToViewX(event->x(), FrustFar), yToViewY(event->y(), FrustFar), -FrustFar);
-		QVector3D direction = (FrustFarPoint - FrustNearPoint);
-		QVector3D startPoint = QVector3D(0,0,5) * mat;
-		SelectionDir = (direction * mat).normalized();
-		qDebug() << SelectionDir;
-		qDebug() << startPoint;
-		PC.selectNearestPoint(SelectionDir, startPoint);
-		paintGL();
+	if (!Shift) {
+		if (event->button() == Qt::RightButton) {
+			Old = Rot;
+			Rotating = true;
+			StartPoint = getVector(event->x(), event->y());
+		} else if (event->button() == Qt::LeftButton) {
+			QMatrix4x4 mat = rotToMatrix();
+			QVector3D FrustNearPoint = QVector3D(xToViewX(event->x(), FrustNear), yToViewY(event->y(), FrustNear), -FrustNear);
+			QVector3D FrustFarPoint = QVector3D(xToViewX(event->x(), FrustFar/FrustNear), yToViewY(event->y(), FrustFar/FrustNear), -FrustFar);
+			QVector3D direction = (FrustFarPoint - FrustNearPoint);
+			QVector3D startPoint = CamPoint * mat;
+			SelectionDir = (direction * mat);
+			qDebug() << SelectionDir;
+			CamOldPoint = startPoint;
+			qDebug() << startPoint;
+			PC.selectNearestPoint(SelectionDir.normalized(), startPoint);
+			paintGL();
+		}
+	} else {
+		if (event->button() == Qt::RightButton) {
+			Dragging = true;
+			updateCurDrag(event);
+		}
 	}
 }
 
@@ -95,12 +110,35 @@ void Render::mouseMoveEvent(QMouseEvent *event) {
 		Rot = (QQuaternion::fromAxisAndAngle(cross, (float)(acos(dot)/3.14 )*180) * Old).normalized();
 		StartPoint = cur;
 		Old = Rot;
+	} else if (Dragging) {
+		QMatrix4x4 mat = rotToMatrix();
+		CamPoint += QVector3D((event->x()-CurDragX)*0.4, (event->y()-CurDragY)*0.4, 0) * mat;
+		updateCurDrag(event);
 	}
+}
+
+void Render::updateCurDrag(QMouseEvent *event) {
+	CurDragX = event->x();
+	CurDragY = event->y();
 }
 
 void Render::mouseReleaseEvent(QMouseEvent *event) {
 	if (event->button() == Qt::RightButton) {
 		Rotating = false;
+	}
+}
+
+void Render::wheelEvent(QWheelEvent *event) {
+	if (!Shift) {
+		FrustZoom *= (event->delta() > 0 ? 2 : 0.5);
+		if (FrustZoom < 0.125) {
+			FrustZoom = 0.125;
+		} else if (FrustZoom > 8) {
+			FrustZoom = 8;
+		}
+	} else {
+		QMatrix4x4 mat = rotToMatrix();
+		CamPoint += QVector3D(0,0,(event->delta() > 0 ? 0.4 : -0.4)) * mat;
 	}
 }
 
@@ -112,11 +150,11 @@ float Render::yPixToDouble(int y) {
 }
 
 float Render::xToViewX(int x, float z) {
-	return ((xPixToDouble(x) * z));
+	return ((xPixToDouble(x)) * z * FrustZoom);
 }
 
 float Render::yToViewY(int y, float z) {
-	return ((yPixToDouble(y)) * z * FrustRatio);
+	return ((yPixToDouble(y)) * z * FrustZoom *FrustRatio);
 }
 
 QMatrix4x4 Render::rotToMatrix(){
@@ -134,14 +172,19 @@ void Render::rotToFloatArray(float conv[16]) {
 	}
 }
 
-
+float Render::getFrustWidth() {
+	return FrustWidth * FrustZoom;
+}
+float Render::getFrustHeight() {
+	return FrustHeight * FrustRatio * FrustZoom;
+}
 void Render::paintGL() {
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glFrustum(-FrustWidth, FrustWidth, -FrustHeight*FrustRatio, FrustHeight*FrustRatio, FrustNear, FrustFar);
-	glTranslatef(0,0,-5);
+	glFrustum(-getFrustWidth(), getFrustWidth(), -getFrustHeight(), getFrustHeight(), FrustNear, FrustFar);
+	glTranslatef(-CamPoint.x(),-CamPoint.y(),-CamPoint.z());
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	float conv[16];
@@ -157,15 +200,15 @@ void Render::paintGL() {
 	glColor4f(1, 1, 1, 1);
 	glLineWidth(10);
 	glBegin(GL_LINES);
-	glVertex3f(0,0,0);
-	glVertex3f(SelectionDir.x(), SelectionDir.y(), SelectionDir.z());
+	glVertex3f(CamOldPoint.x(),CamOldPoint.y(),CamOldPoint.z());
+	glVertex3f(CamOldPoint.x() + SelectionDir.x(), CamOldPoint.y() + SelectionDir.y(), CamOldPoint.z() + SelectionDir.z());
 	glEnd();
 
 	glColor4f(1, 0, 0, 1);
 	glLineWidth(10);
 	glBegin(GL_LINES);
-	glVertex3f(SelectionDir.x()*1, SelectionDir.y()*1, SelectionDir.z()*1);
-	glVertex3f(SelectionDir.x()*2, SelectionDir.y()*2, SelectionDir.z()*2);
+	glVertex3f(CamOldPoint.x() + SelectionDir.x(), CamOldPoint.y() + SelectionDir.y(), CamOldPoint.z() + SelectionDir.z());
+	glVertex3f(CamOldPoint.x() + SelectionDir.x()*2, CamOldPoint.y() + SelectionDir.y()*2, CamOldPoint.z() + SelectionDir.z()*2);
 	glEnd();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
