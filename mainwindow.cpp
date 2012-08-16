@@ -7,9 +7,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	RenderWidget = new Render(this);
-	//RenderWidget->resize(size());
-	RenderWidget->sizePolicy().setHorizontalPolicy(QSizePolicy::Expanding);
-	RenderWidget->sizePolicy().setVerticalPolicy(QSizePolicy::Expanding);
 	ui->gridLayout->addWidget(RenderWidget, 0, 0, 1, 1);
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), RenderWidget, SLOT(redraw()));

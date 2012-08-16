@@ -111,8 +111,7 @@ void Render::mouseMoveEvent(QMouseEvent *event) {
 		StartPoint = cur;
 		Old = Rot;
 	} else if (Dragging) {
-		QMatrix4x4 mat = rotToMatrix();
-		CamPoint += QVector3D((event->x()-CurDragX)*0.4, (event->y()-CurDragY)*0.4, 0) * mat;
+		CamPoint +=  QVector3D((event->x()-CurDragX)*0.4, (event->y()-CurDragY)*0.4, 0);
 		updateCurDrag(event);
 	}
 }
@@ -125,6 +124,7 @@ void Render::updateCurDrag(QMouseEvent *event) {
 void Render::mouseReleaseEvent(QMouseEvent *event) {
 	if (event->button() == Qt::RightButton) {
 		Rotating = false;
+		Dragging = false;
 	}
 }
 
@@ -137,8 +137,7 @@ void Render::wheelEvent(QWheelEvent *event) {
 			FrustZoom = 8;
 		}
 	} else {
-		QMatrix4x4 mat = rotToMatrix();
-		CamPoint += QVector3D(0,0,(event->delta() > 0 ? 0.4 : -0.4)) * mat;
+		CamPoint += QVector3D(0,0,(event->delta() > 0 ? 0.4 : -0.4));
 	}
 }
 
@@ -212,7 +211,7 @@ void Render::paintGL() {
 	glEnd();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glColor4f(1,1,1,0.1);
+	glColor4f(1,1,1,0.4);
 	glBegin(GL_QUADS);
 	glVertex3f(xf,yt,z);
 	glVertex3f(xf,yf,z);
