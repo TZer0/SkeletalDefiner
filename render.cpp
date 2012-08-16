@@ -7,8 +7,8 @@ Render::Render(QWidget *parent) :
 	Dragging = Shift = Rotating = false;
 	FrustWidth = FrustHeight = 1;
 	FrustZoom = 1;
-	FrustNear = 0.3;
-	FrustFar = 10.1;
+	FrustNear = 1;
+	FrustFar = 15.1;
 	SelectionDir = QVector3D(1,1,1);
 	CamPoint = QVector3D(0,0,5);
 	CurDragX = CurDragY = 0;
