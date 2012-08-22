@@ -17,7 +17,8 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     render.h \
-    pointcloud.h
+    pointcloud.h \
+    Qt-based-common-libs/globj.h
 
 LIBS += -lassimp
 

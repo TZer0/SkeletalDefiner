@@ -3,9 +3,9 @@
 
 #include <QtGui>
 #include <QGLWidget>
-#include <assimp/assimp.hpp>
-#include <string>
+#include <QtOpenGL>
 #include "pointcloud.h"
+#include "Qt-based-common-libs/globj.h"
 
 class Render : public QGLWidget
 {
@@ -20,7 +20,6 @@ public:
 	void wheelEvent(QWheelEvent *);
 	void updateCurDrag(QMouseEvent *);
 	void resizeEvent(QResizeEvent *);
-	void loadMesh(std::string);
 	void calcRatio();
 	void updatePointCloudDist();
 	float xPixToDouble(int);
@@ -34,14 +33,14 @@ public:
 	float getFrustHeight();
 	float getFrustWidth();
 
+	GLObj Mesh;
 	PointCloud PC;
 	bool Rotating, Shift, Dragging;
 	QVector3D StartPoint, SelectionDir, CamOldPoint, CamPoint;
 	QQuaternion Rot, Old;
 	float FrustWidth, FrustHeight, FrustNear, FrustFar, FrustRatio, FrustZoom;
 	int CurDragX, CurDragY;
-
-signals:
+	QGLBuffer BufInt, BufFloat;
 	
 public slots:
 	void redraw();

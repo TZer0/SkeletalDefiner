@@ -1,1 +1,1 @@
-sudo apt-get install qtcreator make libassimp-dev
+sudo apt-get install qtcreator make

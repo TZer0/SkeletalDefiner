@@ -10,6 +10,8 @@ public:
 	PointCloud();
 	void selectNearestPoint(QVector3D direction, QVector3D start);
 	void setMaxdist(double);
+	void addPoints(QList<QVector3D>);
+
 	QList<QVector3D*> Points;
 	QList<QVector3D*> Selected;
 	double Maxdist;
