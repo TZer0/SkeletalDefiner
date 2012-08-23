@@ -32,6 +32,10 @@ void Render::initializeGL() {
 	glEnable(GL_BLEND);
 	glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT );
 	Mesh.loadFile("box.obj", QVector3D(1,1,1));
+	for (int i = 0; i < Mesh.Vertices.size()/3; i++) {
+		Mesh.SetColorOrTexPos(i, QVector3D(1,1,1));
+	}
+	Mesh.uploadVert();
 	PC.addPoints(Mesh.Vertices.toList());
 }
 QVector3D Render::getVector(int x, int y) {
@@ -82,6 +86,13 @@ void Render::mousePressEvent(QMouseEvent *event) {
 			CamOldPoint = startPoint;
 			qDebug() << startPoint;
 			PC.selectNearestPoint(SelectionDir.normalized(), startPoint);
+			for (int i = 0; i < Mesh.Vertices.size()/3; i++) {
+				Mesh.SetColorOrTexPos(i, QVector3D(1,1,1));
+			}
+			for (int i = 0; i < PC.Selected.size(); i++) {
+				Mesh.SetColorOrTexPos(*PC.Selected[i], QVector3D(1,0,0));
+			}
+			Mesh.uploadVert();
 			paintGL();
 		}
 	} else {
@@ -207,8 +218,8 @@ void Render::paintGL() {
 	glEnd();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glColor4f(1,1,1,0.4);
-	Mesh.draw(0,0,0, false);
+	glColor3f(1,1,1);
+	Mesh.draw(0,0,0, false, true);
 /*	glBegin(GL_QUADS);
 	glVertex3f(xf,yt,z);
 	glVertex3f(xf,yf,z);

@@ -20,6 +20,4 @@ HEADERS  += mainwindow.h \
     pointcloud.h \
     Qt-based-common-libs/globj.h
 
-LIBS += -lassimp
-
 FORMS    += mainwindow.ui
