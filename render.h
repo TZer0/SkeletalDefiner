@@ -30,6 +30,8 @@ public:
 	QMatrix4x4 rotToMatrix();
 	void rotToFloatArray(float conv[16]);
 	void setShift(bool);
+	void setTreeView(QTreeView *treeView);
+	void updateTreeView();
 	float getFrustHeight();
 	float getFrustWidth();
 
@@ -41,6 +43,7 @@ public:
 	float FrustWidth, FrustHeight, FrustNear, FrustFar, FrustRatio, FrustZoom;
 	int CurDragX, CurDragY;
 	QGLBuffer BufInt, BufFloat;
+	QTreeView *TreeView;
 	
 public slots:
 	void redraw();

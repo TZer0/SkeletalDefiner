@@ -4,6 +4,7 @@ Render::Render(QWidget *parent) :
 	QGLWidget(parent)
 {
 	Rot = QQuaternion::fromAxisAndAngle(0,0,0,90);
+	TreeView = NULL;
 	Dragging = Shift = Rotating = false;
 	FrustWidth = FrustHeight = 1;
 	FrustZoom = 1;
@@ -118,7 +119,7 @@ void Render::mouseMoveEvent(QMouseEvent *event) {
 		StartPoint = cur;
 		Old = Rot;
 	} else if (Dragging) {
-		CamPoint +=  QVector3D((event->x()-CurDragX)*0.4, (event->y()-CurDragY)*0.4, 0);
+		CamPoint +=  QVector3D((event->x()-CurDragX)*0.04, (event->y()-CurDragY)*0.04, 0);
 		updateCurDrag(event);
 	}
 }
@@ -176,6 +177,10 @@ void Render::rotToFloatArray(float conv[16]) {
 	for (int i = 0; i < 16; i++) {
 		conv[i] = from[i];
 	}
+}
+
+void Render::setTreeView(QTreeView *treeView) {
+	TreeView = treeView;
 }
 
 float Render::getFrustWidth() {

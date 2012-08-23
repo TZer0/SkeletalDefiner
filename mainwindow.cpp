@@ -7,7 +7,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	RenderWidget = new Render(this);
+	RenderWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	ui->gridLayout->addWidget(RenderWidget, 0, 0, 1, 1);
+	QTreeView *tmp = new QTreeView(this);
+	tmp->setVisible(true);
+	tmp->setMaximumWidth(250);
+	ui->gridLayout->addWidget(tmp, 0,1,1,1);
+	RenderWidget->setTreeView(tmp);
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), RenderWidget, SLOT(redraw()));
 	timer->start(0);
