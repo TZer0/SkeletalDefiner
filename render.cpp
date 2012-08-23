@@ -183,6 +183,9 @@ void Render::setTreeView(QTreeView *treeView) {
 	TreeView = treeView;
 }
 
+void Render::updateTreeView() {
+}
+
 float Render::getFrustWidth() {
 	return FrustWidth * FrustZoom;
 }

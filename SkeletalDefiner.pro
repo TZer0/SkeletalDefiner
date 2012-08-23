@@ -13,11 +13,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     render.cpp \
-    pointcloud.cpp
+    pointcloud.cpp \
+    meshpoint.cpp
 
 HEADERS  += mainwindow.h \
     render.h \
     pointcloud.h \
-    Qt-based-common-libs/globj.h
+    Qt-based-common-libs/globj.h \
+    meshpoint.h
 
 FORMS    += mainwindow.ui
