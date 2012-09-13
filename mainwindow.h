@@ -19,8 +19,8 @@ public:
 	~MainWindow();
 	
 private:
-	Ui::MainWindow *ui;
-	Render *RenderWidget;
+	Ui::MainWindow *mUI;
+	Render *mRenderWidget;
 };
 
 #endif // MAINWINDOW_H

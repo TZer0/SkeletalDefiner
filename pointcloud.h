@@ -12,9 +12,9 @@ public:
 	void setMaxdist(double);
 	void addPoints(QList<QVector3D>);
 
-	QList<QVector3D*> Points;
-	QList<QVector3D*> Selected;
-	double Maxdist;
+	QList<QVector3D*> mPoints;
+	QList<QVector3D*> mSelected;
+	double mMaxdist;
 };
 
 #endif // POINTCLOUD_H

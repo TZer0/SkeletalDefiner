@@ -35,15 +35,15 @@ public:
 	float getFrustHeight();
 	float getFrustWidth();
 
-	GLObj Mesh;
-	PointCloud PC;
-	bool Rotating, Shift, Dragging;
-	QVector3D StartPoint, SelectionDir, CamOldPoint, CamPoint;
-	QQuaternion Rot, Old;
-	float FrustWidth, FrustHeight, FrustNear, FrustFar, FrustRatio, FrustZoom;
-	int CurDragX, CurDragY;
-	QGLBuffer BufInt, BufFloat;
-	QTreeView *TreeView;
+	GLObj mMesh;
+	PointCloud mPC;
+	bool Rotating, mShift, mDragging;
+	QVector3D mStartPoint, mSelectionDir, mCamOldPoint, mCamPoint;
+	QQuaternion mRot, mOld;
+	float mFrustWidth, mFrustHeight, mFrustNear, mFrustFar, mFrustRatio, mFrustZoom;
+	int mCurDragX, mCurDragY;
+	QGLBuffer mBufInt, mBufFloat;
+	QTreeView *mTreeView;
 	
 public slots:
 	void redraw();

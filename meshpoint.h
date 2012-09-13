@@ -6,7 +6,7 @@ class MeshPoint
 {
 public:
     MeshPoint();
-    QVector3D Point;
+    QVector3D mPoint;
 };
 
 #endif // MESHPOINT_H
